@@ -13,6 +13,10 @@ public class MusicPlayer {
     private JLabel currentTime;
     private JLabel totalTime;
 
+    private int cTime = (int) (clip.getMicrosecondPosition() / 1000000);
+    private int tTime = (int) (clip.getMicrosecondLength() / 1000000);
+
+
     //constructor - building the music player
     public MusicPlayer(){
 
@@ -105,6 +109,20 @@ public class MusicPlayer {
             }
         });
         timer.start();
+    }
+
+    public void fastForward(){
+        if(clip != null && tTime - cTime > 15){
+            clip.setMicrosecondPosition(clip.getMicrosecondPosition() + 1500000);
+        }else if(clip != null && tTime - cTime < 15){
+            clip.setMicrosecondPosition(clip.getMicrosecondLength());
+        }
+    }
+
+    public void fastBackward(){
+        if(clip != null && cTime + 15 > 15){
+            clip.setMicrosecondPosition(clip.getMicrosecondPosition() - 1500000);
+        }
     }
 
     public void updateLabels(){
