@@ -13,9 +13,6 @@ public class MusicPlayer {
     private JLabel currentTime;
     private JLabel totalTime;
 
-    private int cTime = (int) (clip.getMicrosecondPosition() / 1000000);
-    private int tTime = (int) (clip.getMicrosecondLength() / 1000000);
-
 
     //constructor - building the music player
     public MusicPlayer(){
@@ -37,8 +34,13 @@ public class MusicPlayer {
         JPanel buttonPanel = new JPanel();
         JButton playButton = new JButton("Play");
         JButton pauseButton = new JButton("Pause");
+        JButton forwardButton = new JButton("Forward 15s");
+        JButton backwardButton = new JButton("Backward 15s");
+        buttonPanel.add(backwardButton);
         buttonPanel.add(playButton);
         buttonPanel.add(pauseButton);
+        buttonPanel.add(forwardButton);
+
 
 
         //labels
@@ -69,6 +71,20 @@ public class MusicPlayer {
                 updateLabels();
             }
         });
+
+        forwardButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent event){
+                fastForward();
+            }
+        });
+
+        backwardButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent event){
+                fastBackward();
+            }
+        });
+
+
 
 
 
@@ -112,16 +128,17 @@ public class MusicPlayer {
     }
 
     public void fastForward(){
-        if(clip != null && tTime - cTime > 15){
-            clip.setMicrosecondPosition(clip.getMicrosecondPosition() + 1500000);
-        }else if(clip != null && tTime - cTime < 15){
+        if(clip != null && clip.getMicrosecondLength() - clip.getMicrosecondPosition() > 15000000){
+            clip.setMicrosecondPosition(clip.getMicrosecondPosition() + 15000000);
+        }else if(clip != null && clip.getMicrosecondLength() - clip.getMicrosecondPosition() < 15000000){
             clip.setMicrosecondPosition(clip.getMicrosecondLength());
+            updateLabels();
         }
     }
 
     public void fastBackward(){
-        if(clip != null && cTime + 15 > 15){
-            clip.setMicrosecondPosition(clip.getMicrosecondPosition() - 1500000);
+        if(clip != null ){
+            clip.setMicrosecondPosition(clip.getMicrosecondPosition() - 15000000);
         }
     }
 
@@ -138,6 +155,10 @@ public class MusicPlayer {
         if(timer != null){
             timer.stop();
         }
+    }
+
+    public void songSelect(){
+
     }
 
     public static void main(String[] args) {
