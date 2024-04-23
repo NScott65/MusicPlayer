@@ -12,9 +12,9 @@ public class MusicPlayer {
     private Timer timer;
     private JLabel currentTime;
     private JLabel totalTime;
+    private long time = 0;
+    private String currentSong;
 
-    private long time;
-    private String currentSong = "GORG.wav";
 
 
     //constructor - building the music player
@@ -62,20 +62,37 @@ public class MusicPlayer {
         playButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent event){
 
-                if(clip.getMicrosecondPosition() == 0) {
-                    if (currentSong.equals(songSelector.getSelectedItem().toString())) {
-                        playMusic(songSelector.getSelectedItem().toString());
-                        startTimer();
-                        updateLabels();
-                        currentSong = songSelector.getSelectedItem().toString();
-                    } else if (clip.getMicrosecondPosition() > 0 && clip.getMicrosecondPosition() < clip.getMicrosecondLength()) {
-                        playMusic(songSelector.getSelectedItem().toString());
-                        clip.setMicrosecondPosition(time);
-                    } else if (clip.getMicrosecondPosition() == clip.getMicrosecondLength()) {
-                        clip.stop();
-                    }
-                }else{
 
+                if (clip == null) {
+                    playMusic(songSelector.getSelectedItem().toString());
+                    startTimer();
+                    updateLabels();
+                    currentSong = songSelector.getSelectedItem().toString();
+                }else if(!clip.isRunning()){
+                    if(currentSong.equals(songSelector.getSelectedItem().toString())){
+
+                            if (clip.getMicrosecondPosition() == clip.getMicrosecondLength()) {
+                                playMusic(songSelector.getSelectedItem().toString());
+                                clip.setMicrosecondPosition(0);
+                                startTimer();
+                                updateLabels();
+                                currentSong = songSelector.getSelectedItem().toString();
+                            } else {
+                                playMusic(songSelector.getSelectedItem().toString());
+                                startTimer();
+                                updateLabels();
+                                currentSong = songSelector.getSelectedItem().toString();
+                            }
+                    }else{
+                        currentSong = songSelector.getSelectedItem().toString();
+                    }
+                }else {
+                    clip.stop();
+                    playMusic(songSelector.getSelectedItem().toString());
+                    clip.setMicrosecondPosition(0);
+                    startTimer();
+                    updateLabels();
+                    currentSong = songSelector.getSelectedItem().toString();
                 }
             }
         });
@@ -122,6 +139,7 @@ public class MusicPlayer {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
+            clip.setMicrosecondPosition(time);
             clip.start();
         }
         catch(IOException | UnsupportedAudioFileException | LineUnavailableException e){
