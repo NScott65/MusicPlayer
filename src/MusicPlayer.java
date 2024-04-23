@@ -13,6 +13,9 @@ public class MusicPlayer {
     private JLabel currentTime;
     private JLabel totalTime;
 
+    private long time;
+    private String currentSong = "GORG.wav";
+
 
     //constructor - building the music player
     public MusicPlayer(){
@@ -58,15 +61,29 @@ public class MusicPlayer {
         //Button Function
         playButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent event){
-                playMusic(songSelector.getSelectedItem().toString());
-                startTimer();
-                updateLabels();
+
+                if(clip.getMicrosecondPosition() == 0) {
+                    if (currentSong.equals(songSelector.getSelectedItem().toString())) {
+                        playMusic(songSelector.getSelectedItem().toString());
+                        startTimer();
+                        updateLabels();
+                        currentSong = songSelector.getSelectedItem().toString();
+                    } else if (clip.getMicrosecondPosition() > 0 && clip.getMicrosecondPosition() < clip.getMicrosecondLength()) {
+                        playMusic(songSelector.getSelectedItem().toString());
+                        clip.setMicrosecondPosition(time);
+                    } else if (clip.getMicrosecondPosition() == clip.getMicrosecondLength()) {
+                        clip.stop();
+                    }
+                }else{
+
+                }
             }
         });
 
         pauseButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent event){
                 pauseMusic(songSelector.getSelectedItem().toString());
+                time = clip.getMicrosecondPosition();
                 stopTimer();
                 updateLabels();
             }
@@ -157,9 +174,7 @@ public class MusicPlayer {
         }
     }
 
-    public void songSelect(){
 
-    }
 
     public static void main(String[] args) {
         new MusicPlayer();
